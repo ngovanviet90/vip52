@@ -1,6 +1,6 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=C:\Users\Administrator\Desktop\if_Safari_10629.ico
+#AutoIt3Wrapper_Icon=..\favicon.ico
 #AutoIt3Wrapper_UseUpx=y
 #AutoIt3Wrapper_Add_Constants=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -76,9 +76,10 @@ $IdC[50] = "2 RÔ"
 $IdC[51] = "2 CƠ"
 Global 	$GUIMsg, $GUI, $position[4]
 Global 	$height = 190, $Random10, $Random5
-$GUI 		= GUICreate("AUTO Detect Image", 130, 250, -1, -1, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+$GUI 		= GUICreate("XENG.CLUB", 130, 250, -1, -1, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
 $start 		= GUICtrlCreateButton("START", 4, 4, 120, 41, 0x0001)
-Global $tolerance = GUICtrlCreateInput("130", 4, 48, 120, 20, $ES_NUMBER)
+Global $tolerance = GUICtrlCreateInput("100", 4, 48, 60, 20, $ES_NUMBER)
+Global $tolerance2 = GUICtrlCreateInput("55", 64, 48, 60, 20, $ES_NUMBER)
 $idListview = GUICtrlCreateListView(" Name | #", 4, 72, 120, 135)
 For $i = 0 To UBound($IdC)-1
 	If $i < 9 Then
@@ -96,12 +97,12 @@ $ping 	  =  Ping("www.google.com.vn")
 Sleep(1000)
 _ProcessSuspend("Wireshark.exe")
 _ProcessSuspend("Charles.exe")
-If @error And $ping <> 0 Then
+If @error Or $ping = 0 Then
 	GUISetState($GUI, @SW_HIDE)
 	MsgBox(0,"Error","Please connect internet!")
 	Exit
 Else
-	If _GetKey() <> "30a53adfc93996da16ecddc85028af1a" And _GetKey() <> 0 Then
+	If _GetKey() <> "30a53adfc93996da16ecddc85028af1a" Or _GetKey() = 0 Then
 		GUISetState($GUI, @SW_HIDE)
 		InputBox("Active key", "Please active key. "& @CRLF & "Contact 0935147435. "& @CRLF & "Your key:", $Random5 & _Base64Encode(_GetMACFromIP()) & $Random10)
 		Exit
@@ -134,66 +135,51 @@ EndIf
 Func _Start()
 	GUICtrlSetData($start, "STARTING...")
 	GUICtrlSetState($start, $GUI_DISABLE)
-	Local $Result[3],$Result2[3], $imgThumnails2[0], $x, $hTimer = TimerInit(), $fDiff = 0
+	Local $Result[3],$Result2[3], $imgThumnails2[0], $x, $hTimer = TimerInit(), $fDiff = 0, $iFileExists = 0
 	For $i = 1 To 52 Step 1
 		If $i < 10 Then
 			$x = "0"&$i
 		Else
 			$x = $i
 		EndIf
-		$Result  = _IMGSearch_Area(@scriptdir&"\img\thumnails3\" & $x &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
+		$Result  = _IMGSearch_Area(@scriptdir&"\img\thumnails\" & $x &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
 		If $Result[0] <> 1 Then
-			;$Result2 = _IMGSearch_Area(@scriptdir&"\img\thumnails2\" & $x &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
-			;If $Result2[0] <> 1 Then
+			$Result2 = _IMGSearch_Area(@scriptdir&"\img\thumnails2\" & $x &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance2))
+			If $Result2[0] <> 1 Then
 				_ArrayAdd($imgThumnails2, $x)
-			;EndIf
+			EndIf
 		EndIf
 	Next
 
-;~ 	If UBound($imgThumnails2) > 13 Then
-;~  		For $i = 0 To UBound($imgThumnails2) - 1
-;~  			If _elementExists($imgThumnails2, $i) Then
-;~  				$Result = _IMGSearch_Area(@scriptdir&"\img\thumnails3\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
-;~  				If $Result[0] = 1 Then
-;~ 					_ArrayDelete($imgThumnails2, $i)
-;~  				EndIf
-;~  			EndIf
-;~  		Next
-;~  	EndIf
+ 	If UBound($imgThumnails2) > 13 Then
+  		For $i = 0 To UBound($imgThumnails2) - 1
+  			If _elementExists($imgThumnails2, $i) Then
+				$Result  = _IMGSearch_Area(@scriptdir&"\img\thumnails3\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
+				If $Result[0] = 1 Then
+					_ArrayDelete($imgThumnails2, $i)
+				Else
+					$Result2 = _IMGSearch_Area(@scriptdir&"\img\thumnails4\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance2))
+					If $Result2[0] = 1 Then
+						_ArrayDelete($imgThumnails2, $i)
+					EndIf
+				EndIf
+  			EndIf
+  		Next
+  	EndIf
 
-;~  	If UBound($imgThumnails2) > 13 Then
-;~  		For $i = 0 To UBound($imgThumnails2) - 1
-;~  			If _elementExists($imgThumnails2, $i) Then
-;~  				$Result = _IMGSearch_Area(@scriptdir&"\img\thumnails\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
-;~  				If $Result[0] = 1 Then
-;~ 					_ArrayDelete($imgThumnails2, $i)
-;~ 				Else
-;~  					$Result2 = _IMGSearch_Area(@scriptdir&"\img\thumnails2\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
-;~  					If $Result2[0] = 1 Then
-;~  						_ArrayDelete($imgThumnails2, $i)
-;~  					EndIf
-;~  				EndIf
-;~  			EndIf
-;~  		Next
-;~  	EndIf
-
-
-#CS 	If UBound($imgThumnails2) > 13 Then
-; 		For $i = 0 To UBound($imgThumnails2) - 1
-; 			If _elementExists($imgThumnails2, $i) Then
-; 				$Result = _IMGSearch_Area(@scriptdir&"\img\thumnails3\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
-; 				If $Result[0] = 1 Then
-; 					_ArrayDelete($imgThumnails2, $i)
-; 				Else
-; 					$Result2 = _IMGSearch_Area(@scriptdir&"\img\thumnails4\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance))
-; 					If $Result2[0] = 1 Then
-; 						_ArrayDelete($imgThumnails2, $i)
-; 					EndIf
-; 				EndIf
-; 			EndIf
-; 		Next
-; 	EndIf
- #CE
+	If UBound($imgThumnails2) > 13 Then
+  		For $i = 0 To UBound($imgThumnails2) - 1
+  			If _elementExists($imgThumnails2, $i) Then
+				$iFileExists = FileExists(@scriptdir&"\img\thumnails5\" & $imgThumnails2[$i] &".bmp")
+				If $iFileExists Then
+					$Result = _IMGSearch_Area(@scriptdir&"\img\thumnails5\" & $imgThumnails2[$i] &".bmp", $position[0], $position[1], $position[2], $position[3], GUICtrlRead($tolerance2))
+					If $Result[0] = 1 Then
+						_ArrayDelete($imgThumnails2, $i)
+					EndIf
+				EndIf
+  			EndIf
+  		Next
+  	EndIf
 
 	$fDiff = TimerDiff($hTimer)
 	GUISetState(@SW_SHOW,$GUI)
