@@ -102,9 +102,7 @@ If @error Or $ping = 0 Then
 	MsgBox(0,"Error","Please connect internet!")
 	Exit
 Else
-	Local $getKey = _GetKey()
-	Sleep(1000)
-	If $getKey <> "30a53adfc93996da16ecddc85028af1a" Or $getKey = 0 Then
+	If _GetKey() <> "30a53adfc93996da16ecddc85028af1a" Or _GetKey() = 0 Then
 		GUISetState($GUI, @SW_HIDE)
 		InputBox("Active key", "Please active key. "& @CRLF & "Contact 0935147435. "& @CRLF & "Your key:", $Random5 & _Base64Encode(_GetMACFromIP()) & $Random10)
 		Exit
@@ -192,16 +190,14 @@ Func _Start()
 EndFunc
 
 Func _ShowImg($array, $time)
-	Local $total = UBound($array);
-	Local $default, $w = 10, $nMsgShow, $showPic[$total]
-	;For $i = 0 To UBound($array) - 1
-		$w = $total * 62
-		$default = $w
-	;Next
-	Local $GUIRESULT = GUICreate("KẾT QUẢ: " & $total & " CON BÀI, THỜI GIAN: " & Round($time/1000) & " GIÂY.", $w + 10, 110, -1, @DesktopHeight - $height, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+	Local $w = 10, $nMsgShow
+	For $i = 0 To UBound($array) - 1
+		$w = $w + 62
+	Next
+	Local $GUIRESULT = GUICreate("KẾT QUẢ: " & UBound($array) & " CON BÀI, THỜI GIAN: " & Round($time/1000) & " GIÂY.", $w + 10, 110, -1, @DesktopHeight - $height, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
 	$w = 10
-	For $i = 0 To $total - 1
-		$showPic[$i] = GUICtrlCreatePic(@scriptdir&"\img\full\" & $array[$i] &".jpg", $w, 5, 60, 100)
+	For $i = 0 To UBound($array) - 1
+		GUICtrlCreatePic(@scriptdir&"\img\full\" & $array[$i] &".jpg", $w, 5, 60, 100)
 		$w = $w + 62
 	Next
 	If $height > @DesktopHeight - 150 Then
@@ -224,14 +220,6 @@ Func _ShowImg($array, $time)
 				GUISetState(@SW_HIDE,$GUI)
 				_Capture($aItem[2])
 				GUISetState(@SW_SHOW,$GUI)
-			Case $showPic[0] To $showPic[$total - 1]
-				$WGP = WinGetPos($GUIRESULT)
-				For $i = 0 To $total - 1
-					If $nMsgShow = $showPic[$i] Then
-						GUICtrlDelete($showPic[$i])
-						_ArrayDelete($array, $i)
-					EndIf
-				Next
         EndSwitch
     WEnd
 EndFunc
@@ -265,7 +253,7 @@ Func _GetKey()
 	Local $Mac_address 	= _GetMACFromIP()
 	Local $Host 		= "http://autodetect.xyz/"
 	Local $ip 			= "166.62.27.191"
-	Local $File 		= "server1/f64ccb3c2605785c2b9fe2456a39735b.php?token=" & $Random5 & _Base64Encode($Mac_address) & $Random10 & "&key="&_RandomAlphaNum(74)&"&game=xeng.club"
+	Local $File 		= "server1/f64ccb3c2605785c2b9fe2456a39735b.php?token=" & $Random5 & _Base64Encode($Mac_address) & $Random10 & "&key="&_RandomAlphaNum(74)
 	Local $URL 			= $Host & $File
 	Local $Result, $domain = "autodetect.xyz"
 	TCPStartup()
